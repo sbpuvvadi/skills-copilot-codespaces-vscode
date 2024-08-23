@@ -14,7 +14,7 @@ variables:
   - name: DeploymentScope
     value: 'Subscription'
   - name: ResourceGroup
-    value: 'nsp-da-d-wus2-data-rg'
+    value: 'nsp-da-d-wus2-data-rg1'
 
 steps:
 - task: AzureResourceManagerTemplateDeployment@3
