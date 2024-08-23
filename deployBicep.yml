@@ -1,0 +1,41 @@
+trigger:
+- main
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  - name: ServiceConnectionName
+    value: 'ServiceConnectionNameToAzure'
+  - name: DeploymentLocation
+    value:  'South Central US'
+  - name: SubscriptionId
+    value: 'EnterSubscriptionIDHere'
+  - name: DeploymentScope
+    value: 'Subscription'
+  - name: ResourceGroup
+    value: 'nsp-da-d-wus2-data-rg'
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Subscription'
+    azureResourceManagerConnection: ${{ variables.ServiceConnectionName }}
+    subscriptionId: ${{ variables.SubscriptionId }}
+    location: ${{ variables.DeploymentLocation }}
+    templateLocation: 'Linked artifact'
+    csmFile: './Bicep/main.subscription.bicep'
+    csmParametersFile: './Bicep/main.parameters.json'
+    deploymentMode: 'Incremental'
+  condition: eq(variables.DeploymentScope, 'Subscription')
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ variables.ServiceConnectionName }}
+    subscriptionId: ${{ variables.SubscriptionId }}
+    location: ${{ variables.DeploymentLocation }}
+    templateLocation: 'Linked artifact'
+    csmFile: './Bicep/main.resourcegroup.bicep'
+    csmParametersFile: './Bicep/main.parameters.json'
+    deploymentMode: 'Incremental'
+  condition: eq(variables.DeploymentScope, 'Resource Group')
